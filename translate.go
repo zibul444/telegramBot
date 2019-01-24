@@ -43,7 +43,7 @@ package main
 //	sourceLanguage, targetLanguage = s, t
 //}
 //
-//func Initial() {
+//func InitialTranslation() {
 //	tr = translate.New(token)
 //	SetLanguage(sourceLanguage, targetLanguage)
 //	InstalledLanguage()
@@ -61,6 +61,6 @@ package main
 //
 //
 //func main() {
-//	Initial()
+//	InitialTranslation()
 //	Translation(text)
 //}
