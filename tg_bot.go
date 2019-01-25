@@ -18,7 +18,7 @@ var (
 func init() {
 	flag.StringVar(&telegramBotToken,
 		"telegrambottoken",
-		"775526701:AAEAuRjoMT8BoSmymZMmmu6oKvrr6Q1Uou0",
+		"",
 		"Telegram Bot Token")
 	flag.Parse()
 
