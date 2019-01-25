@@ -42,12 +42,12 @@ func main() {
 	updates, err := bot.GetUpdatesChan(u)
 
 	for update := range updates {
-		//reply := "Не знаю что сказать вам " + update.Message.From.UserName
 		if update.Message == nil {
 			continue
 		}
 
-		log.Printf("ChatId - %o \nFrom.UserName: %s \nText: %s \nChat.ID %d \nCommandArguments() %s \nPinnedMessage %v \nCommand() %q \n",
+		log.Printf(
+			"ChatId - %o \nFrom.UserName: %s \nText: %s \nChat.ID %d \nCommandArguments() %s \nPinnedMessage %v \nCommand() %q \n _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_",
 			update.Message.Chat.ID,
 			update.Message.From.UserName,
 			update.Message.Text,
@@ -58,16 +58,23 @@ func main() {
 
 		switch strings.ToLower(update.Message.Command()) {
 		case "start":
-			update.Message.Text = "Привет " + update.Message.From.UserName + ". Я телеграмм-бот"
+			update.Message.Text = "Привет " + update.Message.From.UserName +
+				". Я телеграмм-бот\n /replace - для смены языка\n введите текс для перевода: "
+		case "replace":
+			replaceLanguag()
+			update.Message.Text = "Язык изменен, теперь " +
+				"\nsourceLanguage: " + sourceLanguage + "\ntargetLanguage: " + targetLanguage
 		}
 
 		msg := tgbotapi.NewMessage(update.Message.Chat.ID, update.Message.Text)
 
 		if strings.Compare(update.Message.Command(), "") == 0 {
-			//update.Message.Text = "Не знаю что сказать на " + update.Message.Text + " вам " + update.Message.From.UserName
 			msg.ReplyToMessageID = update.Message.MessageID
 
-			InitialTranslation("ru", "en", "trnsl.1.1.20190120T184305Z.c3a652a65ff5dac8.3a47d3f48cf9619b3a0d89ad5296f28c220f85ad")
+			InitialTranslation(
+				"ru",
+				"en",
+				"trnsl.1.1.20190120T184305Z.c3a652a65ff5dac8.3a47d3f48cf9619b3a0d89ad5296f28c220f85ad")
 			update.Message.Text = Translation(update.Message.Text)
 		}
 
@@ -94,6 +101,10 @@ func InstalledLanguage() {
 
 func SetLanguage(s, t string) {
 	sourceLanguage, targetLanguage = s, t
+}
+
+func replaceLanguag() {
+	sourceLanguage, targetLanguage = targetLanguage, sourceLanguage
 }
 
 func InitialTranslation(sl, tl, t string) {
