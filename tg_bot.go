@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"github.com/dafanasev/go-yandex-translate"
 	"github.com/go-telegram-bot-api/telegram-bot-api"
 	"log"
@@ -26,24 +27,37 @@ func init() {
 		log.Print("-telegramBotToken is required")
 		os.Exit(1)
 	}
+}
+
+func main() {
+	bot := InitTGBot()
+
+	go runBot(bot)
+
+	/* TODO проверить корректность остановки */
+	var ln *string
+	fmt.Scanln(*ln)
+}
+
+func InitTGBot() *tgbotapi.BotAPI {
 	initialTranslation(
 		"ru",
 		"en",
 		"")
-}
 
-func main() {
 	bot, err := tgbotapi.NewBotAPI(telegramBotToken)
-	if err != nil {
-		log.Panic(err)
-	}
+	checkError(err)
 
 	log.Printf("Authorized on account %s", bot.Self.UserName)
+	return bot
+}
 
+//Логика бота
+func runBot(bot *tgbotapi.BotAPI) {
 	u := tgbotapi.NewUpdate(0)
-	u.Timeout = 60
-
+	u.Timeout = 30
 	updates, err := bot.GetUpdatesChan(u)
+	checkError(err)
 
 	for update := range updates {
 		if update.Message == nil {
@@ -65,7 +79,7 @@ func main() {
 			update.Message.Text = "Привет " + update.Message.From.UserName +
 				". Я телеграмм-бот\n /replace - для смены языка\n введите текс для перевода: "
 		case "replace":
-			ReplaceLanguag()
+			ReplaceLanguage()
 			update.Message.Text = "Язык изменен, теперь " +
 				"\nsourceLanguage: " + sourceLanguage + "\ntargetLanguage: " + targetLanguage
 		}
@@ -80,33 +94,39 @@ func main() {
 
 		msg.Text = update.Message.Text
 		_, err := bot.Send(msg)
-		if err != nil {
-			log.Panic(err)
-		}
+		checkError(err)
 	}
 }
 
+func checkError(err error) {
+	if err != nil {
+		log.Panic(err)
+	}
+}
+
+//инициализация АПИ переводчика
 func InstalledLanguage() {
 	response, err := tr.GetLangs(sourceLanguage)
-	if err != nil {
-		log.Println(err)
-	} else {
-		//log.Println("Lang's: 	", response.Langs)
-		//log.Println("Dirs:	", response.Dirs)
-		//log.Println("Message:	", response.Message)
-		log.Println("Code:	", response.Code)
-		log.Println()
-	}
+	checkError(err)
+	//log.Println("Lang's: 	", response.Langs)
+	//log.Println("Dirs:	", response.Dirs)
+	//log.Println("Message:	", response.Message)
+	log.Println("Code:	", response.Code)
+	log.Println()
+
 }
 
+//задать языки перевода
 func SetLanguage(s, t string) {
 	sourceLanguage, targetLanguage = s, t
 }
 
-func ReplaceLanguag() {
+//сменить языки перевода
+func ReplaceLanguage() {
 	sourceLanguage, targetLanguage = targetLanguage, sourceLanguage
 }
 
+//подготовка АПИ переводчика к переводу
 func initialTranslation(sl, tl, t string) {
 	//sourceLanguage, targetLanguage, token = "ru", "en", "trnsl.1.1.20190120T184305Z.c3a652a65ff5dac8.3a47d3f48cf9619b3a0d89ad5296f28c220f85ad"
 	sourceLanguage, targetLanguage, token = sl, tl, t
@@ -115,12 +135,11 @@ func initialTranslation(sl, tl, t string) {
 	InstalledLanguage()
 }
 
+//метод перевода текста
 func Translation(t string) string {
 	translation, err := tr.Translate(targetLanguage, t)
-	if err != nil {
-		log.Println(err)
-	} else {
-		log.Println("Result: ", translation.Result())
-	}
+	checkError(err)
+
+	log.Println("Result: ", translation.Result())
 	return translation.Result()
 }
