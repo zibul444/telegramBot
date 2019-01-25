@@ -26,6 +26,10 @@ func init() {
 		log.Print("-telegramBotToken is required")
 		os.Exit(1)
 	}
+	initialTranslation(
+		"ru",
+		"en",
+		"")
 }
 
 func main() {
@@ -61,7 +65,7 @@ func main() {
 			update.Message.Text = "Привет " + update.Message.From.UserName +
 				". Я телеграмм-бот\n /replace - для смены языка\n введите текс для перевода: "
 		case "replace":
-			replaceLanguag()
+			ReplaceLanguag()
 			update.Message.Text = "Язык изменен, теперь " +
 				"\nsourceLanguage: " + sourceLanguage + "\ntargetLanguage: " + targetLanguage
 		}
@@ -71,10 +75,6 @@ func main() {
 		if strings.Compare(update.Message.Command(), "") == 0 {
 			msg.ReplyToMessageID = update.Message.MessageID
 
-			InitialTranslation(
-				"ru",
-				"en",
-				"")
 			update.Message.Text = Translation(update.Message.Text)
 		}
 
@@ -103,11 +103,11 @@ func SetLanguage(s, t string) {
 	sourceLanguage, targetLanguage = s, t
 }
 
-func replaceLanguag() {
+func ReplaceLanguag() {
 	sourceLanguage, targetLanguage = targetLanguage, sourceLanguage
 }
 
-func InitialTranslation(sl, tl, t string) {
+func initialTranslation(sl, tl, t string) {
 	//sourceLanguage, targetLanguage, token = "ru", "en", "trnsl.1.1.20190120T184305Z.c3a652a65ff5dac8.3a47d3f48cf9619b3a0d89ad5296f28c220f85ad"
 	sourceLanguage, targetLanguage, token = sl, tl, t
 	tr = translate.New(token)
