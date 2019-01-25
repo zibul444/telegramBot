@@ -74,7 +74,7 @@ func main() {
 			InitialTranslation(
 				"ru",
 				"en",
-				"trnsl.1.1.20190120T184305Z.c3a652a65ff5dac8.3a47d3f48cf9619b3a0d89ad5296f28c220f85ad")
+				"")
 			update.Message.Text = Translation(update.Message.Text)
 		}
 
