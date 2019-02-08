@@ -35,8 +35,8 @@ func main() {
 	go runBot(bot)
 
 	/* TODO проверить корректность остановки */
-	var ln *string
-	fmt.Scanln(*ln)
+	var ln string
+	fmt.Scanln(&ln)
 }
 
 func InitTGBot() *tgbotapi.BotAPI {
